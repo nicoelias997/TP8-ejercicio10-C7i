@@ -7,14 +7,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 const Formulario = () => {
 
-    // let storagePeli = JSON.parse(localStorage.getItem("listaPelis")) || [];
+    let storagePeli = JSON.parse(localStorage.getItem("listaPelis")) || [];
 
 
     const [nombrePelicula, setNombrePelicula] = useState("")
     const [descripcionPelicula, setDescripcionPelicula] = useState("")
     const [generoPeli, setGeneroPeli] = useState("")
 
-    const [arrayPelicula, setArrayPelicula] = useState([])
+    const [arrayPelicula, setArrayPelicula] = useState(storagePeli)
     
     let peliculaNueva = {
         nombrePelicula,
@@ -23,10 +23,15 @@ const Formulario = () => {
         id: uuidv4()
     }
 
-  
-    // useEffect(() => {
-    //     localStorage.setItem("listaPelis", JSON.stringify(arrayPelicula));
-    //   }, [arrayPelicula]);
+    const eliminarPeli = (id) => {
+        let arrayFiltrado = arrayPelicula.filter(item => item.id !== id)
+        setArrayPelicula(arrayFiltrado)
+    }
+
+
+    useEffect(() => {
+        localStorage.setItem("listaPelis", JSON.stringify(arrayPelicula));
+      }, [arrayPelicula]);
 
     const crearPeli = (e) => {
         e.preventDefault()
@@ -48,22 +53,22 @@ const Formulario = () => {
 
 
   return (
-    <Col >
-    <Col sm={12} md={12} lg={8} > 
+    <Container>
+    <Col sm={12}> 
     <Form onSubmit={crearPeli}>
             <Form.Group className="mb-2 mt-2">
                 <Form.Label>Nombre: </Form.Label>
-                <Form.Control type="text" onChange={e => setNombrePelicula(e.target.value)}></Form.Control>
+                <Form.Control type="text" value={nombrePelicula} onChange={e => setNombrePelicula(e.target.value)}></Form.Control>
             </Form.Group>
 
             <Form.Group className="mb-2 mt-2">
                 <Form.Label>Descripcion:</Form.Label>
-                <Form.Control as="textarea" rows={4} onChange={e => setDescripcionPelicula(e.target.value)}></Form.Control>
+                <Form.Control as="textarea" value={descripcionPelicula} rows={4} onChange={e => setDescripcionPelicula(e.target.value)}></Form.Control>
             </Form.Group>
 
             <Form.Group className="mb-2 mt-2">
                 <Form.Label>Genero: </Form.Label>
-                <Form.Select aria-label="Default select example" onChange={e => setGeneroPeli(e.target.value)}>
+                <Form.Select aria-label="Default select example" value={generoPeli} onChange={e => setGeneroPeli(e.target.value)}>
                 {
                     generoPelicula.map(item => (
                         <option key={item}>{item}</option>
@@ -72,20 +77,20 @@ const Formulario = () => {
                 }  
                 </Form.Select>
             </Form.Group>
-            <Button type='submit' className='btn btn-warning btn-sm mt-3 float-end'>
+            <Button type='submit' className='btn btn-warning mb-2 mt-2'>
                 Guardar
             </Button>
     </Form>
     </Col>
-    
-    <Col xs={12} sm={6} md={4} lg={3}>
+    <Row xs={3} className="mb-3">  
+        
                 {
                     arrayPelicula.map(item =>
 
-                    <CardPelicula nombre={item.nombrePelicula} key={item.id} descripcion={item.descripcionPelicula} genero={item.generoPeli}></CardPelicula>
+                    <CardPelicula nombre={item.nombrePelicula} key={item.id} descripcion={item.descripcionPelicula} genero={item.generoPeli} eliminarPeli={() => eliminarPeli(item.id)}></CardPelicula>
                 )}
-    </Col>
-    </Col>
+    </Row>
+    </Container>
   )
 }
 
